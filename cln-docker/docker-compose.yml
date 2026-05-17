@@ -1,0 +1,71 @@
+services:
+  bitcoind:
+    image: ruimarinho/bitcoin-core:latest
+    command:
+      - -regtest
+      - -rpcuser=user
+      - -rpcpassword=pass
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -fallbackfee=0.0001
+      - -zmqpubrawblock=tcp://0.0.0.0:28332
+      - -zmqpubrawtx=tcp://0.0.0.0:28333
+      - -txindex=1
+    networks:
+      - regtest
+
+  cln1:
+    build:
+      context: .
+      dockerfile: Dockerfile.cln
+    environment:
+      - NODE_ALIAS=alice
+      - BITCOIN_RPC_HOST=bitcoind
+      - PLUGIN_PATH=/plugin/prism-cln
+    volumes:
+      - ./target/debug/prism-cln:/plugin/prism-cln:ro
+      - cln1-data:/root/.lightning
+    depends_on:
+      - bitcoind
+    networks:
+      - regtest
+
+  cln2:
+    build:
+      context: .
+      dockerfile: Dockerfile.cln
+    environment:
+      - NODE_ALIAS=bob
+      - BITCOIN_RPC_HOST=bitcoind
+      - PLUGIN_PATH=/plugin/prism-cln
+    volumes:
+      - ./target/debug/prism-cln:/plugin/prism-cln:ro
+      - cln2-data:/root/.lightning
+    depends_on:
+      - bitcoind
+    networks:
+      - regtest
+
+  cln3:
+    build:
+      context: .
+      dockerfile: Dockerfile.cln
+    environment:
+      - NODE_ALIAS=carol
+      - BITCOIN_RPC_HOST=bitcoind
+      - PLUGIN_PATH=/plugin/prism-cln
+    volumes:
+      - ./target/debug/prism-cln:/plugin/prism-cln:ro
+      - cln3-data:/root/.lightning
+    depends_on:
+      - bitcoind
+    networks:
+      - regtest
+
+volumes:
+  cln1-data:
+  cln2-data:
+  cln3-data:
+
+networks:
+  regtest:

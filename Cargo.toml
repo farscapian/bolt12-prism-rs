@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "prism-core",
+    "prism-cln",
+]
+resolver = "2"
